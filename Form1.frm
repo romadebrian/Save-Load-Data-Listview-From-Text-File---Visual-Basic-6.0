@@ -1,20 +1,35 @@
 VERSION 5.00
 Begin VB.Form Form1 
    Caption         =   "Form1"
-   ClientHeight    =   5955
+   ClientHeight    =   5715
    ClientLeft      =   120
    ClientTop       =   450
-   ClientWidth     =   8535
+   ClientWidth     =   3600
    LinkTopic       =   "Form1"
-   ScaleHeight     =   5955
-   ScaleWidth      =   8535
+   ScaleHeight     =   5715
+   ScaleWidth      =   3600
    StartUpPosition =   3  'Windows Default
+   Begin VB.TextBox Text1 
+      Height          =   285
+      Left            =   120
+      TabIndex        =   3
+      Top             =   4560
+      Width           =   1455
+   End
+   Begin VB.CommandButton Command1 
+      Caption         =   "Save"
+      Height          =   615
+      Left            =   120
+      TabIndex        =   2
+      Top             =   5040
+      Width           =   1575
+   End
    Begin VB.CommandButton Load 
       Caption         =   "Load"
       Height          =   615
-      Left            =   2880
+      Left            =   1800
       TabIndex        =   1
-      Top             =   4800
+      Top             =   5040
       Width           =   1575
    End
    Begin VB.ListBox List1 
@@ -22,7 +37,7 @@ Begin VB.Form Form1
       Left            =   120
       TabIndex        =   0
       Top             =   120
-      Width           =   8175
+      Width           =   3255
    End
 End
 Attribute VB_Name = "Form1"
@@ -30,67 +45,34 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-Public Sub LoadListView(FilePath As String, ListView As ListView)
-
-    On Error GoTo Err: 'Our error reporting
-    'Our Variables
-    Dim Lst As ListItem 'For out ListView
-    Dim Fnum As Integer 'For our FreeFile
-    Dim tData As String 'Stores Data from a text file
-    Dim tAry As Variant 'Stores column items from text file
-    Dim F As Integer 'Used With our For Loop
-    Const Delim As String = "," 'Our unique delimiter. Feel free To change this If needed. Just watch out For what you use, it can cause problems.
-    'Set our ListView to Report Viewing
-    ListView.View = lvwReport
-    'Let's clear our ListView incase there i
-    '     s data already present
-    ListView.ListItems.Clear
-    'Let's get a free file handle
-    Fnum = FreeFile
-    'Open our text file for inputing
-    Open FilePath For Input As Fnum
-    'Do loop while were not at the End Of Fi
-    '     le
-
-
-    Do While Not EOF(Fnum)
-        'Input 1 line from our text file into th
-        '     e variable tData
-        Input #Fnum, tData
-        'Split our line of text and store each i
-        '     ndvidual value into an array
-        tAry = Split(tData, Delim)
-        'Loop through each element of the array
-        '     and add it to the ListView
-
-
-        For F = LBound(tAry) To UBound(tAry)
-            'If this is the first item
-
-
-            If F = 0 Then
-                'Add our item to the ListView
-                Set Lst = ListView.ListItems.Add(, , tAry(F))
-            Else
-                'Else we need to add the approptiate sub
-                '     item
-                Lst.SubItems(F) = tAry(F)
-            End If
-
-        Next F 'Continue on
-
-    Loop 'Continue on
-
-    Close Fnum 'Close our file
-    Exit Sub 'Exit this sub
-Err:     ' Our Error reporting. Feel free To fix this up
-    MsgBox "Error Locating Data File.", vbCritical
-End Sub
-
 Private Sub Command1_Click()
-LoadListView "C:\Test.txt", ListView1
+Dim i As Integer
+
+'List1.AddItem Text1.Text
+List1.AddItem Date + Time
+
+'pembuatan file Notepad
+Open App.Path & "\test.txt" For Append As #1 'Drive penyimpanan
+
+For i = 0 To List1.ListCount - 1
+    Print #1, List1.List(i)
+Next
+Close #1
+'MsgBox "Data telah di simpan ke Notepad", 32, "Informasi"
 End Sub
 
-Private Sub Form_Load()
+Private Sub Load_Click()
+Dim ff As Long
+Dim line As String
 
+List1.Clear
+
+ff = FreeFile
+Open App.Path & "\test.txt" For Input As #ff
+Do While Not EOF(ff)
+       Line Input #ff, line
+       'make sure we're not adding a blank line
+       If Len(line) Then List1.AddItem line
+Loop
+Close #ff
 End Sub
